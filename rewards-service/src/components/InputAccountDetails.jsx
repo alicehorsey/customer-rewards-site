@@ -9,14 +9,7 @@ class InputAccountDetails extends Component {
         isChannelerror: false
     }
 
-    sendAccountDetailsToApp = () => {
-        const { accountNumber, portfolio } = this.state;
-        this.props.updateAccountDetails(accountNumber, portfolio)
-        this.setState({
-            accountNumber: "",
-            portfolio: []
-        })
-    }
+
 
     handleAccountNumberInput = (event) => {
         this.setState({ accountNumber: event.target.value })
@@ -28,7 +21,6 @@ class InputAccountDetails extends Component {
         if (isChannelerror) {
             this.setState({ isChannelerror: false })
         }
-
         if (portfolio.includes(channels[value])) {
             return this.setState({ isChannelerror: true })
         } else {
@@ -36,10 +28,6 @@ class InputAccountDetails extends Component {
                 portfolio: [...prevState.portfolio, channels[value]]
             }))
         }
-    }
-
-    handleChannelErrorOkButton = () => {
-        this.setState({ isChannelerror: false })
     }
 
     handleRemoveChannel = (event) => {
@@ -54,9 +42,13 @@ class InputAccountDetails extends Component {
     }
 
     handleSubmit = (event) => {
-        // const { accountNumber, portfolio } = this.state
         event.preventDefault()
-        this.sendAccountDetailsToApp();
+        const { accountNumber, portfolio } = this.state;
+        this.props.updateAccountDetails(accountNumber, portfolio)
+        this.setState({
+            accountNumber: "",
+            portfolio: []
+        })
     }
 
     render() {
@@ -68,7 +60,7 @@ class InputAccountDetails extends Component {
                     Please input your Account Number:
                     <input type="text" name="accountNumber" value={accountNumber} onChange={this.handleAccountNumberInput} />
                 </label>
-                <p>{accountNumber.length !== 12 ? "Account number needs to be 12 digits in length." : ""}</p>
+                <p>{accountNumber.length !== 0 && accountNumber.length !== 12 ? "Account number needs to be 12 digits in length." : ""}</p>
 
                 <label>
                     Please choose the channels you are subscribed to:

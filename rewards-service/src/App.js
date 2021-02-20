@@ -13,6 +13,7 @@ class App extends Component {
     showInputForm: true,
   }
 
+
   setAccountDetails = (accountNumber, portfolio) => {
     this.setState({ accountNumber, portfolio, showInputForm: false })
   }
