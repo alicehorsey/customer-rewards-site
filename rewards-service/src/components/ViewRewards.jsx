@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { rewardsData } from "../data/rewardsServiceTable";
+import { insertChannelNames } from '../utils/utils';
 
 class ViewRewards extends Component {
 
@@ -19,25 +20,12 @@ class ViewRewards extends Component {
         }) //this saves the rewards objects for the channels that the customer is eligible for in the state
     }
 
-    insertChannelNames = (channelNames) => {
-        let response = ""
-        channelNames.forEach((channel, index) => {
-            if (index === channelNames.length - 1) {
-                response += `${channel}`
-            } else if (index === channelNames.length - 2) {
-                response += `${channel} and `
-            } else {
-                response += `${channel}, `
-            }
-        })
-        return response;
-    }
-
     composeSorryNoRewardsMessage = () => {
         const { portfolio } = this.props;
+        //channelNames is an array of channel the user has said they are subscribed to but do not receive rewards
         const channelNames = portfolio.filter(channel => { if (rewardsData[channel].code === "N/A") return channel });
 
-        return `There are no rewards for ${this.insertChannelNames(channelNames)} subscribers at this time.`;
+        return `There are no rewards for ${insertChannelNames(channelNames)} subscribers at this time.`;
     }
 
     composeRewardsMessage = () => {
