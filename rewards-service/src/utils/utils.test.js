@@ -1,4 +1,20 @@
-const { insertChannelNames } = require("../utils/utils")
+const { isAccountNumberValid, insertChannelNames } = require("../utils/utils")
+
+describe("Testing Validate Account Number Function", () => {
+    test("When given an empty string, returns false", () => {
+        expect(isAccountNumberValid("")).toBe(false)
+    })
+    test("When given a string of less than or greater than 12 numbers, returns true", () => {
+        expect(isAccountNumberValid("1234")).toBe(false)
+        expect(isAccountNumberValid("12345678901234")).toBe(false)
+    })
+    test("When given a string of 12 numbers, returns true", () => {
+        expect(isAccountNumberValid("123456789012")).toBe(true)
+    })
+    test("If the digits in the string are not all numbers returns false", () => {
+        expect(isAccountNumberValid("123abcd4567e")).toBe(false)
+    })
+})
 
 describe("Testing Insert Channel Names Function", () => {
     test("When given an empty array, returns an empty string", () => {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { rewardsData } from "../data/rewardsServiceTable";
+import { isAccountNumberValid } from '../utils/utils';
 
 class AccountDetailsInputForm extends Component {
 
@@ -9,75 +10,81 @@ class AccountDetailsInputForm extends Component {
         isChannelerror: false
     }
 
-    channels = Object.keys(rewardsData) //<--- ["SPORTS", "KIDS", "MUSIC", "NEWS", "MOVIES"] but could add to the channel data and the new channels would be there
+    channels = Object.keys(rewardsData); //<--- ["SPORTS", "KIDS", "MUSIC", "NEWS", "MOVIES"] but could add to the channel data and the new channels would be there
 
-    handleAccountNumberInput = (event) => {
-        this.setState({ accountNumber: event.target.value })
+    handleAccountNumberInput = ({ target: { value } }) => {
+        this.setState({ accountNumber: value });
     }
 
-    handleChannelChange = (event) => {
-        const { value } = event.target
+    accountNumberValidationMessage = () => {
+        const { accountNumber } = this.state;
+        return <p>{isAccountNumberValid(accountNumber) ? "Account number valid" : "Account number should be 12 digits"}</p>
+    }
+
+    handleChannelSelection = ({ target: { value } }) => {
         const { portfolio, isChannelerror } = this.state;
 
-        if (isChannelerror) {
-            this.setState({ isChannelerror: false })
-        }
+        if (isChannelerror) { this.setState({ isChannelerror: false }) };
+
         if (portfolio.includes(this.channels[value])) {
-            return this.setState({ isChannelerror: true })
+            return this.setState({ isChannelerror: true }); //<- shows error if channel has already been selected
         } else {
             return this.setState(prevState => ({
-                portfolio: [...prevState.portfolio, this.channels[value]]
+                portfolio: [...prevState.portfolio, this.channels[value]] //<- adds channel to state if not already been selected
             }))
         }
     }
 
-    handleRemoveChannel = (event) => {
-        const { portfolio, isChannelerror } = this.state
-        if (isChannelerror) {
-            this.setState({ isChannelerror: false })
+    composeSubscriptionMessageAndList = () => {
+        const { portfolio, isChannelerror } = this.state;
+        if (portfolio.length > 0) {
+            return (
+                <div>
+                    <h4>You are subscribed to:</h4>
+                    {portfolio.map((channel, index) => { return <p key={index} onClick={this.handleRemoveChannel}>{channel}</p> })}
+                    <p >{isChannelerror ? "You can only select a channel once." : ""}</p>
+                    <p>Click on the channel name to remove it from the list.</p>
+                </div>
+            );
         }
-        const indexToDelete = portfolio.indexOf(event.target.innerText)
+    }
 
-        portfolio.splice(indexToDelete, 1) //<-- //remove unwanted channel from list
-        this.setState({ portfolio }) //<-- set state to refresh page showing channel deleted
+    handleRemoveChannel = ({ target: { innerText } }) => {
+        const { isChannelerror } = this.state;
+        if (isChannelerror) { this.setState({ isChannelerror: false }) };
+
+        this.setState(currentState => {
+            const newPortfolio = currentState.portfolio.filter(channel => channel !== innerText); //<- removes unwanted channel from state and list
+            return { portfolio: newPortfolio };
+        })
     }
 
     handleSubmit = (event) => {
         event.preventDefault()
         const { accountNumber, portfolio } = this.state;
-        this.props.updateAccountDetails(accountNumber, portfolio)
-        this.setState({
-            accountNumber: "",
-            portfolio: []
-        })
+
+        this.props.updateAccountDetails(accountNumber, portfolio); //<- sends account number and portfolio to App.js
+        this.setState({ accountNumber: "", portfolio: [] }); //<- resets state in AccountDetailsInputForm component state
     }
 
     render() {
-        const { accountNumber, portfolio, isChannelerror } = this.state
+        const { accountNumber, portfolio } = this.state;
 
         return (
             <form onSubmit={this.handleSubmit}>
                 <label>
                     Please input your Account Number:
-                    <input type="text" name="accountNumber" value={accountNumber} onChange={this.handleAccountNumberInput} />
+                    <input type="text" value={accountNumber} onChange={this.handleAccountNumberInput} />
                 </label>
-                <p>{accountNumber.length !== 0 && accountNumber.length !== 12 ? "Account number needs to be 12 digits in length." : ""}</p>
+                {this.accountNumberValidationMessage()};
 
                 <label>
                     Please choose the channels you are subscribed to:
-                    <select multiple={true} value={portfolio} onChange={this.handleChannelChange}>
-                        {this.channels.map((channel, index) => {
-                            return <option key={index} value={index}>{channel}</option>
-                        })}
+                    <select multiple={true} value={portfolio} onChange={this.handleChannelSelection}>
+                        {this.channels.map((channel, index) => { return <option key={index} value={index}>{channel}</option> })};
                     </select>
                 </label>
-
-                <h4>{portfolio.length > 0 ? "You are subscribed to:" : ""}
-                </h4>
-                {portfolio.map((portfolioChannel, index) => {
-                    return <p key={index} onClick={this.handleRemoveChannel}>{portfolioChannel}</p>
-                })}
-                <p hidden={!isChannelerror}>You can only select a channel once. Choose on a different channel to continue.</p>
+                {this.composeSubscriptionMessageAndList()};
 
                 <input type="submit" value="Submit" />
             </form>

@@ -1,3 +1,8 @@
+const isAccountNumberValid = (accountNumber) => {
+    const allDigits = accountNumber.match(/^[0-9]+$/) != null;
+    return allDigits && accountNumber.length === 12 ? true : false;
+}
+
 const insertChannelNames = (channelNames) => {
     let response = ""
     channelNames.forEach((channel, index) => {
@@ -11,4 +16,4 @@ const insertChannelNames = (channelNames) => {
     })
     return response;
 }
-module.exports = { insertChannelNames }
+module.exports = { isAccountNumberValid, insertChannelNames }
