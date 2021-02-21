@@ -1,82 +1,69 @@
 import React, { Component } from 'react';
+import { rewardsData } from "../data/rewardsServiceTable";
 
 class ViewRewards extends Component {
 
     state = {
-        rewards: {
-            SPORTS: {
-                code: "CHAMPIONS_LEAGUE_FINAL_TICKET",
-                message: "A ticket to the Champion League Final"
-            },
-            KIDS: {
-                code: "N/A",
-                message: "Sorry there are no rewards for KIDS channel subscribers at this time."
-            },
-            MUSIC: {
-                code: "KARAOKE_PRO_MICROPHONE",
-                message: "A Karaoke Pro Microphone"
-            },
-            NEWS: {
-                code: "N/A",
-                message: "Sorry there are no rewards for NEWS channel subscribers at this time."
-            },
-            MOVIES: {
-                code: "PIRATES_OF_THE_CARIBBEAN_COLLECTION",
-                message: "The Pirates of the Caribbean movie collection"
-            }
-        },
         customerRewards: []
     }
 
     componentDidMount = () => {
         const { portfolio } = this.props;
-        const { rewards } = this.state;
 
         portfolio.forEach((channel) => {
-            if (channel === "SPORTS") {
+            if (rewardsData[channel].code !== "N/A") {
                 return this.setState(prevState => ({
-                    customerRewards: [...prevState.customerRewards, rewards.SPORTS]
-                }))
-            } else if (channel === "MUSIC") {
-                return this.setState(prevState => ({
-                    customerRewards: [...prevState.customerRewards, rewards.MUSIC]
-                }))
-            } else if (channel === "MOVIES") {
-                return this.setState(prevState => ({
-                    customerRewards: [...prevState.customerRewards, rewards.MOVIES]
+                    customerRewards: [...prevState.customerRewards, rewardsData[channel]]
                 }))
             }
+        }) //this saves the rewards objects for the channels that the customer is eligible for in the state
+    }
+
+    insertChannelNames = (channelNames) => {
+        let response = ""
+        channelNames.forEach((channel, index) => {
+            if (index === channelNames.length - 1) {
+                response += `${channel}`
+            } else if (index === channelNames.length - 2) {
+                response += `${channel} and `
+            } else {
+                response += `${channel}, `
+            }
         })
+        return response;
     }
 
     composeSorryNoRewardsMessage = () => {
         const { portfolio } = this.props;
+        const channelNames = portfolio.filter(channel => { if (rewardsData[channel].code === "N/A") return channel });
 
-        const channelNames = [];
-        portfolio.map(channel => { if (channel === "KIDS" || channel === "NEWS") return channelNames.push(channel) });
-
-        return channelNames.length === 1 ? `There are no rewards for ${channelNames[0]} subscribers at this time.` : `There are no rewards for ${channelNames[0]} and ${channelNames[1]} subscribers at this time.`;
+        return `There are no rewards for ${this.insertChannelNames(channelNames)} subscribers at this time.`;
     }
 
+    composeRewardsMessage = () => {
+        const { customerRewards } = this.state;
+        if (customerRewards.length > 0) {
+            return (
+                <div>
+                    <h2>Congratulations you are eligible for the following rewards:</h2>
+                    {customerRewards.map(reward => {
+                        return <h3>{reward.message}</h3>
+                    })}
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    <h2>Sorry</h2>
+                    <h3>{this.composeSorryNoRewardsMessage()}</h3>
+                </div>
+            )
+        }
+    }
 
     render() {
-        const { customerRewards, rewards } = this.state;
-        const { portfolio } = this.props;
-
-        return (
-            <div>
-                <h2>{customerRewards.length > 0 ? "Congratulations you are eligible for the following rewards:" : "Sorry"}</h2>
-                {
-                    customerRewards.length > 0 ? customerRewards.map(reward => {
-                        //this number is the same as the reward id
-                        return <h3>{reward.message}</h3>
-                    }) : <h3>{this.composeSorryNoRewardsMessage()}</h3>
-                }
-            </div >
-        );
+        return this.composeRewardsMessage();
     }
-
-
 }
 
 
