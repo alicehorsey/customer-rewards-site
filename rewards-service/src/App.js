@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import skyLogo from "./images/sky-logo_0.png"
-import InputAccountDetails from "./components/InputAccountDetails"
-import ViewRewards from "./components/ViewRewards"
+import { AccountDetailsInputForm, LogoAndSiteName, ViewRewards } from './components';
 
 
 class App extends Component {
@@ -13,28 +11,24 @@ class App extends Component {
     showInputForm: true,
   }
 
-
   setAccountDetails = (accountNumber, portfolio) => {
     this.setState({ accountNumber, portfolio, showInputForm: false })
   }
 
   render() {
-
     const { showInputForm, portfolio } = this.state
 
     if (showInputForm) {
       return (
         <div className="App">
-          <img src={skyLogo} alt="Sky Logo"></img>
-          <h1>Customer Rewards Service</h1>
-          <InputAccountDetails updateAccountDetails={this.setAccountDetails} />
+          <LogoAndSiteName />
+          <AccountDetailsInputForm updateAccountDetails={this.setAccountDetails} />
         </div>
       );
     } else {
       return (
         <div className="App">
-          <img src={skyLogo} alt="Sky Logo"></img>
-          <h1>Customer Rewards Service</h1>
+          <LogoAndSiteName />
           <ViewRewards portfolio={portfolio} />
         </div>
       );
