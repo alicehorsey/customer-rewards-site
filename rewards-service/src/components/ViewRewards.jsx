@@ -25,7 +25,7 @@ class ViewRewards extends Component {
         //channelNames is an array of channel the user has said they are subscribed to but do not receive rewards
         const channelNames = portfolio.filter(channel => { if (rewardsData[channel].code === "N/A") return channel });
 
-        return `There are no rewards for ${insertChannelNames(channelNames)} subscribers at this time.`;
+        return `Sorry, there are no rewards for ${insertChannelNames(channelNames)} subscribers at this time.`;
     }
 
     composeRewardsMessage = () => {
@@ -42,15 +42,23 @@ class ViewRewards extends Component {
         } else {
             return (
                 <div>
-                    <h2>Sorry</h2>
-                    <h3>{this.composeSorryNoRewardsMessage()}</h3>
+                    <h2>{this.composeSorryNoRewardsMessage()}</h2>
                 </div>
             )
         }
     }
 
     render() {
-        return this.composeRewardsMessage();
+
+        console.log(this.props)
+        return (
+            <div>
+                {this.composeRewardsMessage()}
+                <button className="checkAgainButton" onClick={this.props.resetDetails}>Check Again
+                </button>
+            </div>
+        )
+
     }
 }
 

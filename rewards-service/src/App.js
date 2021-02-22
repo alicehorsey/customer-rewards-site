@@ -15,6 +15,10 @@ class App extends Component {
     this.setState({ accountNumber, portfolio, showInputForm: false })
   }
 
+  resetDetails = () => {
+    this.setState({ accountNumber: null, portfolio: [], showInputForm: true })
+  }
+
   render() {
     const { showInputForm, portfolio } = this.state
 
@@ -22,14 +26,14 @@ class App extends Component {
       return (
         <div className="App">
           <LogoAndSiteName />
-          <AccountDetailsInputForm updateAccountDetails={this.setAccountDetails} />
+          <AccountDetailsInputForm setAccountDetails={this.setAccountDetails} checkEligibility={this.checkEligibility} />
         </div>
       );
     } else {
       return (
         <div className="App">
           <LogoAndSiteName />
-          <ViewRewards portfolio={portfolio} />
+          <ViewRewards portfolio={portfolio} resetDetails={this.resetDetails} />
         </div>
       );
     }

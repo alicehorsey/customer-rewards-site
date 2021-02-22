@@ -18,7 +18,9 @@ class AccountDetailsInputForm extends Component {
 
     accountNumberValidationMessage = () => {
         const { accountNumber } = this.state;
-        return <p>{isAccountNumberValid(accountNumber) ? "Account number valid" : "Account number should be 12 digits"}</p>
+        if (accountNumber.length > 0) {
+            return <p className="accountNumberMsg" style={{ color: isAccountNumberValid(accountNumber) ? "green" : "red" }}>{isAccountNumberValid(accountNumber) ? "Account number is valid." : "Account number should be 12 digits."}</p>
+        }
     }
 
     handleChannelSelection = ({ target: { value } }) => {
@@ -40,10 +42,10 @@ class AccountDetailsInputForm extends Component {
         if (portfolio.length > 0) {
             return (
                 <div>
-                    <h4>You are subscribed to:</h4>
-                    {portfolio.map((channel, index) => { return <p key={index} onClick={this.handleRemoveChannel}>{channel}</p> })}
-                    <p >{isChannelerror ? "You can only select a channel once." : ""}</p>
-                    <p>Click on the channel name to remove it from the list.</p>
+                    <p className="channelsSelected">You have selected:</p>
+                    {portfolio.map((channel, index) => { return <p id="selectedChannel" key={index} onClick={this.handleRemoveChannel}>{channel}</p> })}
+                    <p className="channelError">{isChannelerror ? "You can only select a channel once. Please click on another channel to continue or remove it from the list." : ""}</p>
+                    <p className="removeChannelMsg">Click on the channel name to remove it from the list.</p>
                 </div>
             );
         }
@@ -63,7 +65,8 @@ class AccountDetailsInputForm extends Component {
         event.preventDefault()
         const { accountNumber, portfolio } = this.state;
 
-        this.props.updateAccountDetails(accountNumber, portfolio); //<- sends account number and portfolio to App.js
+        this.props.setAccountDetails(accountNumber, portfolio); //<- sends account number and portfolio to App.js
+        this.props.checkEligibility(accountNumber); //<- sends account number to Eligibilty Service
         this.setState({ accountNumber: "", portfolio: [] }); //<- resets state in AccountDetailsInputForm component state
     }
 
@@ -72,21 +75,25 @@ class AccountDetailsInputForm extends Component {
 
         return (
             <form onSubmit={this.handleSubmit}>
-                <label>
-                    Please input your Account Number:
-                    <input type="text" value={accountNumber} onChange={this.handleAccountNumberInput} />
-                </label>
-                {this.accountNumberValidationMessage()};
-
-                <label>
-                    Please choose the channels you are subscribed to:
-                    <select multiple={true} value={portfolio} onChange={this.handleChannelSelection}>
-                        {this.channels.map((channel, index) => { return <option key={index} value={index}>{channel}</option> })};
+                <div className="formSection1">
+                    <label>
+                        Please input your Account Number:
+                    <input id="accountNumberInput" type="text" value={accountNumber} onChange={this.handleAccountNumberInput} />
+                    </label>
+                    {this.accountNumberValidationMessage()}
+                </div>
+                <div className="formSection2">
+                    <label>
+                        Please choose the channels you are subscribed to:
+                    <select id="selectChannelInput" multiple={true} value={portfolio} onChange={this.handleChannelSelection}>
+                            {this.channels.map((channel, index) => { return <option key={index} value={index}>{channel}</option> })};
                     </select>
-                </label>
-                {this.composeSubscriptionMessageAndList()};
-
-                <input type="submit" value="Submit" />
+                    </label>
+                    {this.composeSubscriptionMessageAndList()}
+                </div>
+                <div>
+                    <input className="submitButton" type="submit" value="Submit" disabled={!portfolio.length} />
+                </div>
             </form>
         );
     }
