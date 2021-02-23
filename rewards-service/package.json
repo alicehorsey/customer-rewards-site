@@ -16,7 +16,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "test-utils": "jest utils.test.js"
+    "test-utils": "jest utils.test.js",
+    "test-eligibilityService": "jest eligibilityService.test.js"
   },
   "eslintConfig": {
     "extends": [
