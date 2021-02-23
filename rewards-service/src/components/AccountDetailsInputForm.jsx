@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { rewardsData } from "../data/rewardsServiceTable";
+import { rewardsData } from "../rewardsService/data/rewardsServiceTable";
 import { isAccountNumberValid } from '../utils/utils';
 
 class AccountDetailsInputForm extends Component {
@@ -10,7 +10,7 @@ class AccountDetailsInputForm extends Component {
         isChannelerror: false
     }
 
-    channels = Object.keys(rewardsData); //<--- ["SPORTS", "KIDS", "MUSIC", "NEWS", "MOVIES"] but could add to the channel data and the new channels would be there
+    channels = Object.keys(rewardsData); //<--- ["SPORTS", "KIDS", "MUSIC", "NEWS", "MOVIES"]
 
     handleAccountNumberInput = ({ target: { value } }) => {
         this.setState({ accountNumber: value });
@@ -64,9 +64,10 @@ class AccountDetailsInputForm extends Component {
     handleSubmit = (event) => {
         event.preventDefault()
         const { accountNumber, portfolio } = this.state;
+        const { setAccountDetails, checkEligibility } = this.props;
 
-        this.props.setAccountDetails(accountNumber, portfolio); //<- sends account number and portfolio to App.js
-        this.props.checkEligibility(accountNumber); //<- sends account number to Eligibilty Service
+        setAccountDetails(accountNumber, portfolio); //<- sends account number and portfolio to App.js
+        checkEligibility(accountNumber); //<- sends account number to Eligibilty Service
         this.setState({ accountNumber: "", portfolio: [] }); //<- resets state in AccountDetailsInputForm component state
     }
 
